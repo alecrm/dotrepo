@@ -1,0 +1,12 @@
+# Some Standard fields
+######################
+# Host (Entry nickname for easier referencing. If you have a separate entry where Host is '*', the appended options apply to all entries)
+#   HostName (ip of local network box or something like 'github.com')
+#   User
+#   Port
+#   UserKnownHostsFile (Send to /dev/null to ignore known hosts warnings/issues)
+#   StrictHostKeyChecking [yes/no] (Set to no to avoid known hosts warnings/issues)
+#   PasswordAuthentication [yes/no]
+#   IdentityFile (location of your ssh key)
+#   IdentitiesOnly [yes/no] (Set this on yes on my previous vagrant build?)
+#   LogLevel (Was set to FATAL on previous vagrant build)
