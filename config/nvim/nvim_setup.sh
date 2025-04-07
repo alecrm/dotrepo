@@ -205,8 +205,7 @@ install_font_macos() {
   echo "### Fonts ###"
   if ! fc-list | grep -qi "$FONT_NAME"; then
     echo "Installing $FONT_NAME font..."
-    brew tap homebrew/cask-fonts
-    brew install --cask font-meslo-lg-nerd-font
+    brew install --cask font-meslolgs-nerd-font
   else
     echo "✅ $FONT_NAME already installed."
   fi
