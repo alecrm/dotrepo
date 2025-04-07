@@ -1,10 +1,9 @@
 [http]
 	sslVerify = false
-[user]
-	name = amillar
-	email = amillar@1nn0v8.io
 [pull]
 	ff = only
+[push]
+	autoSetupRemote = true
 [alias]
 	lg = log --pretty=format:'%C(normal)%cr%C(normal) %C(magenta)%h%C(normal) %C(blue)%an%C(normal) %C(bold cyan)%s%C(normal)' --no-merges
 	glg = log --pretty=format:'%C(normal)%cr%C(normal) %C(magenta)%h%C(normal) %C(blue)%an%C(normal) %C(bold cyan)%s%C(normal)' --graph
@@ -14,3 +13,12 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[user]
+	name = Alec Millar
+[fetch]
+	prune = true
+[core]
+	editor = nvim
+
+[include]
+  path = .gitconfig.local
