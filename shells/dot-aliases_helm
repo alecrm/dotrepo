@@ -1,0 +1,3 @@
+alias hu='helm repo update'
+alias hidev='helm install alchemy nexus-helm/alchemydev --devel -n'
+alias hlist='helm list -n'
