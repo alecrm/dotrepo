@@ -1,0 +1,90 @@
+return {
+	{
+		"nvim-telescope/telescope.nvim",
+		version = false, -- always use latest
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+			{
+				"nvim-telescope/telescope-fzf-native.nvim",
+				build = "make",
+				config = function()
+					require("telescope").load_extension("fzf")
+				end,
+			},
+		},
+		cmd = { "Telescope" },
+		config = function()
+			require("telescope").setup({
+				defaults = {
+          prompt_prefix = " ",
+					file_ignore_patterns = {
+  					"node_modules",
+  					"%.git/",
+  					"target/",
+  					"dist/",
+  					"build/",
+  					"__pycache__/",
+  					"squashfs%-root/",
+  					"/%.?wine[^/]*/",
+  					".steam/",
+  					".jdks/",
+  					".vscode/extensions/"
+  				},
+          vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--hidden",
+            "--glob=!.git/*",
+            "--glob=!node_modules/*",
+            "--glob=!dist/*",
+            "--glob=!build/*",
+            "--glob=!__pycache__/*",
+          }
+        },
+				pickers = {
+					find_files = {
+						find_command = {
+							"fd", "--type", "f", "--strip-cwd-prefix",
+							"--hidden",
+							"--no-ignore",
+							"--exclude", "node_modules",
+							"--exclude", ".git",
+							"--exclude", "target",
+							"--exclude", "dist",
+							"--exclude", "build",
+							"--exclude", "__pycache__",
+							"--exclude", "squashfs-root",
+							"--exclude", "wine*",
+							"--exclude", ".wine*",
+							"--exclude", ".steam",
+							"--exclude", ".jdks",
+							"--exclude", ".vscode/extensions",
+							"--exclude", "miniconda3",
+							"--exclude", ".*-wine*",
+              "--exclude", ".cache",
+              "--exclude", ".m2",
+              "--exclude", "snap",
+              "--exclude", ".var",
+						},
+						hidden = true,
+						no_ignore = true,
+					},
+				},
+			})
+		end,
+		keys = {
+			{ "<leader>ff", "<cmd>Telescope find_files<CR>",                desc = "Find files" },
+			{ "<leader>fg", "<cmd>Telescope live_grep<CR>",                 desc = "Live grep" },
+			{ "<leader>fb", "<cmd>Telescope buffers<CR>",                   desc = "Find buffers" },
+			{ "<leader>fh", "<cmd>Telescope help_tags<CR>",                 desc = "Help tags" },
+			{ "<leader>fo", "<cmd>Telescope oldfiles<CR>",                  desc = "Recent files" },
+			{ "<leader>fs", "<cmd>Telescope current_buffer_fuzzy_find<CR>", desc = "Find in buffer" },
+		},
+	},
+}
