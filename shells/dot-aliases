@@ -1,4 +1,3 @@
-alias testing='cd ~/CodeProjects/planx/qa/test-automation/web-test-automation'
-alias cdVagrant='cd ~/CodeProjects/vagrant/vagrant'
-alias vsh="vagrant ssh"
-alias cdfirefox="cd /Users/alec.millar/Library/Application\ Support/Firefox/Profiles/m7yx2bft.default-release/chrome"
+source ~/.aliases_helm
+source ~/.aliases_kubectl
+source ~/.aliases.local
