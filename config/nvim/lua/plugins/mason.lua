@@ -83,6 +83,12 @@ return {
 						},
 					})
 				end,
+        ["bashls"] = function()
+          lspconfig.bashls.setup({
+            on_attach = on_attach,
+            filetypes = { "sh", "zsh" },
+          })
+        end,
 			})
 		end,
 	},
