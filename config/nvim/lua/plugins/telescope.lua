@@ -17,6 +17,7 @@ return {
 		config = function()
 			require("telescope").setup({
 				defaults = {
+          borderchars = { "█", " ", "▀", "█", "█", " ", " ", "▀" },
           prompt_prefix = " ",
 					file_ignore_patterns = {
   					"node_modules",
@@ -29,7 +30,21 @@ return {
   					"/%.?wine[^/]*/",
   					".steam/",
   					".jdks/",
-  					".vscode/extensions/"
+  					".vscode/extensions/",
+            ".mypy_cache",
+            ".venv",
+            ".DS_Store",
+            ".pytest_cache",
+            ".kube",
+            ".sbt",
+            ".nvm",
+            ".bash_sessions",
+            ".zsh_sessions",
+            ".npm",
+            ".local/share/nvim",
+            "Library",
+            ".docker",
+            ".logmein"
   				},
           vimgrep_arguments = {
             "rg",
