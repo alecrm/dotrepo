@@ -6,8 +6,12 @@ vim.opt.shiftwidth = 2          -- Spaces to use for autoindent
 vim.opt.softtabstop = 2         -- Spaces per tab while editing
 vim.opt.autoindent = true       -- Keep indentation consistent on new lines
 vim.opt.smartindent = true      -- Automatically handle indentation for code
-
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.ttyfast = true
+vim.opt.lazyredraw = false
+vim.opt.termguicolors = true
 
 require("config.lazy")
-
 require("config.keymaps")
+
