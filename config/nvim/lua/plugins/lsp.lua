@@ -1,6 +1,7 @@
 return {
-	-- Mason core plugin
-	{
+
+ -- Mason core plugin
+  {
 		"williamboman/mason.nvim",
 		build = ":MasonUpdate",
 		event = "VeryLazy",
@@ -18,15 +19,15 @@ return {
 		end,
 	},
 
-	-- Mason bridge to lspconfig
-	{
+  -- Mason bridge to lspconfig
+ {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = {
 			"williamboman/mason.nvim",
 			"neovim/nvim-lspconfig",
-			"folke/which-key.nvim",             -- optional, for key descriptions
+			"folke/which-key.nvim",
 		},
-		event = { "BufReadPre", "BufNewFile" }, -- load on file open
+		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 
 			local mason_lspconfig = require("mason-lspconfig")
@@ -91,5 +92,5 @@ return {
         end,
 			})
 		end,
-	},
+  },
 }
