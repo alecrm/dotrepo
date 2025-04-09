@@ -1,4 +1,5 @@
 vim.keymap.set("n", "<leader>q", function()
+
   -- Go to dashboard + manually trigger drop
   local function go_to_dashboard()
     vim.cmd("Alpha")
@@ -49,11 +50,37 @@ end, { desc = "Find Projects" })
 vim.keymap.set("v", "<Tab>", ">gv", { noremap = true, silent = true })
 vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
 
+vim.keymap.set("i", "<C-d>", "<C-o>x", { desc = "Forward delete (simulate 'x')" })
+vim.keymap.set("i", "<Del>", "<C-o>x", { desc = "Forward delete (simulate 'x')" })
+
 -- Line Swapping keymaps
 -- Normal mode
 vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })
 vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { desc = "Move line up" })
 
+vim.keymap.set("i", "<A-j>", "<C-o>:m .+1<CR>==", { desc = "Move line down" })
+vim.keymap.set("i", "<A-k>", "<C-o>:m .-2<CR>==", { desc = "Move line up" })
+
 -- Visual mode
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+
+vim.keymap.set("n", "<A-l>", "w", { desc = "Move forward one word" })
+vim.keymap.set("n", "<A-h>", "b", { desc = "Move backward one word" })
+
+
+vim.keymap.set("i", "<A-l>", "<C-o>w", { desc = "Move word forward (insert)" })
+vim.keymap.set("i", "<A-h>", "<C-o>b", { desc = "Move word back (insert)" })
+
+vim.keymap.set("v", "<A-l>", "w", { desc = "Move forward one word" })
+vim.keymap.set("v", "<A-h>", "b", { desc = "Move backward one word" })
+
+vim.keymap.set("n", "<A-]>", "$", { desc = "Move to the end of the line" })
+vim.keymap.set("n", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
+
+vim.keymap.set("i", "<A-]>", "<C-o>$", { desc = "Move to the end of the line" })
+vim.keymap.set("i", "<A-[>", "<C-o>0", { desc = "Move to the first non-whitespace char" })
+
+vim.keymap.set("v", "<A-]>", "$", { desc = "Move to the end of the line" })
+vim.keymap.set("v", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
+
