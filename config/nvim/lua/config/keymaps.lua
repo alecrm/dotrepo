@@ -36,7 +36,7 @@ vim.keymap.set("n", "<leader>q", function()
   end
 end, { desc = "Smart quit to dashboard with drop" })
 
-
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
 
 vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, { desc = "Show diagnostic" })
 
@@ -83,4 +83,10 @@ vim.keymap.set("i", "<A-[>", "<C-o>^", { desc = "Move to the first non-whitespac
 
 vim.keymap.set("v", "<A-]>", "$", { desc = "Move to the end of the line" })
 vim.keymap.set("v", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
+
+-- Insert mode: Shift+Tab -> de-indent and stay in insert
+vim.keymap.set("i", "<S-Tab>", "<C-d>", { desc = "De-indent line (insert mode)" })
+
+-- Visual mode: Shift+Tab -> decrease indent for selection
+vim.keymap.set("v", "<S-Tab>", "<gv", { desc = "De-indent selection (visual mode)" })
 
