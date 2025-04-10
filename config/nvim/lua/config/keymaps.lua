@@ -79,7 +79,7 @@ vim.keymap.set("n", "<A-]>", "$", { desc = "Move to the end of the line" })
 vim.keymap.set("n", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
 
 vim.keymap.set("i", "<A-]>", "<C-o>$", { desc = "Move to the end of the line" })
-vim.keymap.set("i", "<A-[>", "<C-o>0", { desc = "Move to the first non-whitespace char" })
+vim.keymap.set("i", "<A-[>", "<C-o>^", { desc = "Move to the first non-whitespace char" })
 
 vim.keymap.set("v", "<A-]>", "$", { desc = "Move to the end of the line" })
 vim.keymap.set("v", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
