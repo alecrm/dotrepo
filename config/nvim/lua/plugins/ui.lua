@@ -1,15 +1,140 @@
 return {
   {
-    "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      require("lualine").setup()
-    end,
+
+      local function get_venv_name()
+        local full = vim.b.venv_path
+        if not full then return nil end
+
+        -- Step up from the binary to its containing folder
+        -- e.g. from .../.venv/bin/python → ..../myproject
+        local parent = vim.fn.fnamemodify(full, ":h:h:h")
+        return vim.fn.fnamemodify(parent, ":t")
+      end
+
+
+      local function venv_status()
+        if vim.bo.filetype ~= "python" then return "" end
+
+        local name = get_venv_name()
+        if name then
+          return " " .. name
+        end
+
+        return ""
+      end
+
+      require('lualine').setup({
+         
+
+        options = {
+          icons_enabled = true,
+          disabled_filetypes = {
+            statusline = {},
+            winbar = {},
+          },
+          ignore_focus = {},
+          always_divide_middle = true,
+          always_show_tabline = true,
+          globalstatus = false,
+          refresh = {
+            statusline = 100,
+            tabline = 100,
+            winbar = 100,
+          }
+        },
+        sections = {
+          lualine_a = {'mode'},
+          lualine_b = {'branch', 'diff', 'diagnostics', },
+          lualine_c = {'filename', },
+          lualine_x = {'encoding', 'fileformat', 'filetype', venv_status },
+          lualine_y = {'progress'},
+          lualine_z = {'location'}
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = {
+            'filename',
+            -- get_venv_path,
+            'test'
+          },
+          lualine_x = {'location'},
+          lualine_y = {},
+          lualine_z = {}
+        },
+        tabline = {},
+        winbar = {},
+        inactive_winbar = {},
+        extensions = {}
+      })
+    end
+  },
+
+  -- UI components
+  { "MunifTanjim/nui.nvim",        verison = false, branch = "main", lazy = true },
+
+  { "nvim-tree/nvim-web-devicons", lazy = true, },
+
+  {
+    "utilyre/barbecue.nvim",
+    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      attach_navic = false,
+      theme = "auto",
+      include_buftypes = { "" },
+      exclude_filetypes = { "gitcommit", "Trouble", "toggleterm" },
+      show_modified = false,
+    },
   },
 
   {
-    "nvim-tree/nvim-web-devicons",
+    "petertriho/nvim-scrollbar",
+    -- event = { "BufReadPost", "BufNewFile" },
     lazy = true,
+    opts = {
+      set_highlights = false,
+      excluded_filetypes = {
+        "prompt",
+        "TelescopePrompt",
+        "noice",
+        "neo-tree",
+        "dashboard",
+        "alpha",
+        "lazy",
+        "mason",
+        "DressingInput",
+        "",
+      },
+      handlers = {
+        gitsigns = true,
+      },
+    },
+  },
+
+  {
+    "anuvyklack/windows.nvim",
+    event = "WinNew",
+    dependencies = {
+      { "anuvyklack/middleclass" },
+      { "anuvyklack/animation.nvim", enabled = true },
+    },
+    opts = {
+      animation = { enable = true, duration = 150, fps = 60 },
+      autowidth = { enable = true },
+    },
+    keys = { { "<leader>z", "<cmd>WindowsMaximize<CR>", desc = "Zoom window" } },
+    init = function()
+      vim.o.winwidth = 30
+      vim.o.winminwidth = 30
+      vim.o.equalalways = true
+    end,
   },
 
   {
@@ -21,7 +146,7 @@ return {
         return vim.api.nvim_buf_line_count(bufnr) < 2000
       end)
 
-    local highlight = {
+      local highlight = {
         "RainbowDelimiterRed",
         "RainbowDelimiterYellow",
         "RainbowDelimiterBlue",
