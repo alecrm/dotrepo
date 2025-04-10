@@ -6,6 +6,21 @@ return {
   },
   config = function()
 		require("nvim-tree").setup({
+      git = {
+        ignore = false,
+      },
+      filters = {
+        custom = {
+          ".mypy_cache",
+          ".vscode",
+          ".venv",
+          "uv.lock",
+          ".pytest_cache",
+          ".DS_Store",
+          ".git"
+        },
+        always_show = { "results" },
+      },
 			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 	})
   end
