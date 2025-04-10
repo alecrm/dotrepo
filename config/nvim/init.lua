@@ -20,3 +20,4 @@ require("lsp.pyright")
 --    Set up conform.nvim
 --    Set up heirline.nvim
 --    Configure snacks.nvim
+--    Find coloring for log files
