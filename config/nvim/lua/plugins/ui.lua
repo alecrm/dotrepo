@@ -126,7 +126,7 @@ return {
       { "anuvyklack/animation.nvim", enabled = true },
     },
     opts = {
-      animation = { enable = true, duration = 150, fps = 60 },
+      animation = { enable = false },
       autowidth = { enable = true },
     },
     keys = { { "<leader>z", "<cmd>WindowsMaximize<CR>", desc = "Zoom window" } },
@@ -136,7 +136,7 @@ return {
       vim.o.equalalways = true
     end,
   },
-
+  
   {
     "lukas-reineke/indent-blankline.nvim",
     event = { "BufReadPost", "BufNewFile", "VeryLazy" },
