@@ -14,6 +14,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 
     local root_dir = vim.fs.dirname(root)
     local venv_python = root_dir .. "/.venv/bin/python"
+    local venv_path = root_dir .. "/.venv/bin/activate"
     local python_path = vim.fn.executable(venv_python) == 1 and venv_python or "python3"
 
     -- Save for Lualine
@@ -37,7 +38,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
       },
       on_attach = function(client, bnr)
         pyright_clients[root_dir] = client.id
-        vim.b[bnr].venv_path = python_path
+        vim.b[bnr].venv_path = venv_path
       end,
     })
   end,

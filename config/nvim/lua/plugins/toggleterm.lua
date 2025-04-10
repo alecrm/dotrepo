@@ -3,6 +3,7 @@ return {
   version = "*",
   event = "VeryLazy",
   opts = {
+    start_in_insert = true,
     size = 20,
     open_mapping = [[<leader>tt]],
     hide_numbers = true,
@@ -19,7 +20,31 @@ return {
   },
   cmd = { "ToggleTerm" },
   config = function()
+    vim.api.nvim_create_autocmd("BufWinEnter", {
+      pattern = "term://*",
+      callback = function()
+        -- Defer a bit to allow windows.nvim to finish its adjustments
+        vim.defer_fn(function()
+          -- Force terminal to enter insert mode
+          vim.cmd("startinsert!")
+        end, 50)  -- adjust the delay as needed (in milliseconds)
+      end,
+    })
+
+
     local Terminal = require("toggleterm.terminal").Terminal
+
+    local function get_activation_command()
+      -- Use the tracked variable or set a default path if not present.
+      local venv_path = vim.b.venv_path or "./venv/bin/activate"
+      local file = io.open(venv_path, "r")
+      if file then
+        file:close()
+        return "source " .. venv_path .. " && exec $SHELL"
+      else
+        return "$SHELL"  -- Fallback if the activation script doesn't exist
+      end
+    end
 
     -- Define custom floating lazygit terminal
     local lazygit = Terminal:new({
@@ -72,19 +97,21 @@ return {
     vim.keymap.set("n", "<leader>tp", function()
       python:toggle()
     end, { desc = "Toggle Python REPL" })
+
+    vim.keymap.set("n", "<C-\\>", function()
+      local cmd = get_activation_command()
+      -- Create a temporary terminal instance with the dynamically generated cmd.
+      local term = Terminal:new({
+        cmd = cmd,
+        direction = "horizontal",
+        hidden = true,
+      })
+      term:toggle() 
+    end, { desc = "Toggle venv-aware terminal" })
   end,
 
   keys = {
     -- Optional hotkey to toggle float specifically
-    {
-      "<C-\\>",
-      function()
-        require("toggleterm.terminal").Terminal
-            :new({ direction = "horizontal" })
-            :toggle()
-      end,
-      desc = "Toggle Vertical Terminal",
-    },
     {
       "<leader>tf",
       function()
