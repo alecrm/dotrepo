@@ -14,4 +14,9 @@ vim.opt.termguicolors = true
 
 require("config.lazy")
 require("config.keymaps")
+require("lsp.pyright")
 
+-- TODO:
+--    Set up conform.nvim
+--    Set up heirline.nvim
+--    Configure snacks.nvim
