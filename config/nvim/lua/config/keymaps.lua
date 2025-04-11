@@ -1,22 +1,19 @@
 vim.keymap.set("n", "<leader>q", function()
-
-  -- Go to dashboard + manually trigger drop
   local function go_to_dashboard()
-    vim.cmd("Alpha")
-    vim.defer_fn(function()
-      local ok, drop = pcall(require, "config.drop")
-      if ok then drop.setup() end
-    end, 50)
+    local ok, dashboard = pcall(require, "snacks.dashboard")
+    if ok and dashboard and dashboard.open then
+      dashboard.open()
+    else
+      vim.notify("Snacks dashboard not available", vim.log.levels.ERROR)
+    end
   end
 
-  -- If not modified, quick quit
   if not vim.bo.modified then
     vim.cmd("bdelete")
     vim.schedule(go_to_dashboard)
     return
   end
 
-  -- Prompt for save/quit decision
   vim.cmd("redraw")
   vim.api.nvim_echo(
     { { "[q] quit w/o saving, [x] save + quit, [c] cancel", "WarningMsg" } },
@@ -34,7 +31,7 @@ vim.keymap.set("n", "<leader>q", function()
   else
     vim.api.nvim_echo({ { "Cancelled", "Normal" } }, false, {})
   end
-end, { desc = "Smart quit to dashboard with drop" })
+end, { desc = "Back to Dashboard" })
 
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
 

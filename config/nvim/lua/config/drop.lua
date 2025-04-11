@@ -23,11 +23,6 @@ M.setup = function()
     max = 2000,
     interval = 50,
     screensaver = 1000 * 60 * 3,
-    -- filetypes = {
-    --   "dashboard",
-    --   "alpha",
-    --   "ministarter"
-    -- },
     winblend = 0,
   })
 end
