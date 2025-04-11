@@ -19,7 +19,6 @@ return {
           ".DS_Store",
           ".git"
         },
-        always_show = { "results" },
       },
 			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 	})
