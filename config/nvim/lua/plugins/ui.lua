@@ -14,7 +14,6 @@ return {
         return vim.fn.fnamemodify(parent, ":t")
       end
 
-
       local function venv_status()
         if vim.bo.filetype ~= "python" then return "" end
 
@@ -27,8 +26,6 @@ return {
       end
 
       require('lualine').setup({
-         
-
         options = {
           icons_enabled = true,
           disabled_filetypes = {

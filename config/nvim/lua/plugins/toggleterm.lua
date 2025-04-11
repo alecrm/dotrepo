@@ -65,18 +65,20 @@ return {
       },
     })
 
-    -- Easy escape from terminal mode with Esc
     vim.keymap.set("t", "<Esc>", function()
       -- Exit terminal mode
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
 
-      -- Check if current buffer is a ToggleTerm terminal
-      local bufname = vim.api.nvim_buf_get_name(0)
-      if bufname:match("term://") then
-        vim.cmd("close") -- closes the window
+      -- Check if the current window is floating
+      local win_config = vim.api.nvim_win_get_config(0)
+      if win_config.relative == "" then  -- not a floating window
+        -- Check if current buffer is a ToggleTerm terminal, then close the window
+        local bufname = vim.api.nvim_buf_get_name(0)
+        if bufname:match("term://") then
+          vim.cmd("close")
+        end
       end
     end, { noremap = true, silent = true })
-
 
     -- Global keymap to toggle lazygit
     vim.keymap.set("n", "<leader>gg", function()
