@@ -87,3 +87,5 @@ vim.keymap.set("i", "<S-Tab>", "<C-d>", { desc = "De-indent line (insert mode)" 
 -- Visual mode: Shift+Tab -> decrease indent for selection
 vim.keymap.set("v", "<S-Tab>", "<gv", { desc = "De-indent selection (visual mode)" })
 
+vim.keymap.set('v', '<leader>y', '"+y', { noremap = true, silent = true, desc = 'Copy to system clipboard' })
+

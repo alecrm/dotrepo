@@ -160,7 +160,18 @@ return {
         segments = {
           {
             -- line number
-            text = { " ", builtin.lnumfunc },
+            -- text = { " ", builtin.lnumfunc },
+            text = {
+              function(args)
+                local abs = tostring(args.lnum)
+                local rel = tostring(math.abs(vim.fn.line(".") - args.lnum))
+                if args.lnum == vim.fn.line(".") then
+                  return " " .. abs -- current line: just absolute
+                else
+                  return string.format(" %s|%s", abs, rel)
+                end
+              end,
+            },
             condition = { true, builtin.not_empty },
             click = "v:lua.ScLa",
           },

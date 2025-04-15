@@ -6,6 +6,7 @@ return {
   opts = {
     bigfile = { enabled = true },
     dashboard = {
+      floating = false,
       row = nil,
       col = nil,
       pane_gap = 4,
@@ -178,6 +179,8 @@ return {
     }
   },
   init = function()
+    vim.opt.number = true
+    vim.opt.relativenumber = true
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
       callback = function()
