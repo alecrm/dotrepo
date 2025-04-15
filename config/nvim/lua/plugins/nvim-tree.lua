@@ -17,7 +17,8 @@ return {
           "uv.lock",
           ".pytest_cache",
           ".DS_Store",
-          ".git"
+          ".git",
+          "__pycache__"
         },
       },
 			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })

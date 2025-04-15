@@ -110,19 +110,19 @@ return {
       })
       term:toggle() 
     end, { desc = "Toggle venv-aware terminal" })
+
+    vim.keymap.set("n", "<leader>tf", function()
+      local cmd = get_activation_command()
+      local term = Terminal:new({
+        cmd = cmd,
+        direction = "float",
+        hidden = true,
+      })
+      term:toggle()
+    end, { desc = "Toggle Floating Terminal" })
   end,
 
   keys = {
-    -- Optional hotkey to toggle float specifically
-    {
-      "<leader>tf",
-      function()
-        require("toggleterm.terminal").Terminal
-            :new({ direction = "float" })
-            :toggle()
-      end,
-      desc = "Toggle Floating Terminal",
-    },
     {
       "<leader>tv",
       function()
