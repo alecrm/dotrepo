@@ -4,3 +4,5 @@ source ~/.aliases_kubectl
 if [ -f ~/.aliases.local ]; then
   source ~/.aliases.local
 fi
+
+alias ez="exec zsh"
