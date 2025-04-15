@@ -82,7 +82,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(
 	git
 	zsh-autosuggestions
-	zsh-syntax-highlighting
+	fast-syntax-highlighting
   zsh-bat
 )
 [ -f ~/.zsh_plugins.local ] && source ~/.zsh_plugins.local
