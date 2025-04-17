@@ -1,47 +1,92 @@
+-- ABSOLUTELY INSANE KEYMAP TO HANDLE DASHBOARD
+-- Try to find a Git root by looking for “.git” upward from a file’s dir
+local function find_git_root(filepath)
+  local dir = vim.fn.fnamemodify(filepath, ":p:h")
+  local found = vim.fs.find(".git", { upward = true, path = dir })
+  if found and #found > 0 then
+    return vim.fn.fnamemodify(found[1], ":h")
+  end
+  return nil
+end
+
 vim.keymap.set("n", "<leader>q", function()
-  local function go_to_dashboard()
-    local ok, dashboard = pcall(require, "snacks.dashboard")
-    if ok and dashboard and dashboard.open then
-      dashboard.open()
-    else
-      vim.notify("Snacks dashboard not available", vim.log.levels.ERROR)
+  local dash = require("snacks.dashboard")
+
+  -- 1) collect all modified, “normal” buffers
+  local mods = {}
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_get_option(buf, "buftype") == ""
+       and vim.api.nvim_buf_get_option(buf, "modified")
+    then
+      mods[#mods + 1] = buf
     end
   end
 
-  if not vim.bo.modified then
-    vim.cmd("bdelete")
-    vim.schedule(go_to_dashboard)
-    return
+  -- 2) recursive per‑buffer prompt
+  local function handle_next(i)
+    if i > #mods then
+      -- done → wipe & reset to initial dashboard
+      vim.cmd("bufdo! bwipeout!")
+      vim.cmd("only")
+      vim.cmd("enew")
+      dash.open({ buf = vim.api.nvim_get_current_buf(), win = vim.api.nvim_get_current_win() })
+      return
+    end
+
+    local buf      = mods[i]
+    local fullpath = vim.api.nvim_buf_get_name(buf)
+    local display
+
+    if fullpath == "" then
+      display = "[No Name]"
+    else
+      local root = find_git_root(fullpath)
+      if root then
+        local project = vim.fn.fnamemodify(root, ":t")
+        local rel     = vim.fn.fnamemodify(fullpath, ":.")
+        rel = rel:gsub("^%./", "")
+        display = project .. "/" .. rel
+      else
+        display = fullpath
+      end
+    end
+
+    -- use vanilla vim.ui.select()
+    vim.ui.select(
+      { "Save", "Skip", "Cancel" },
+      { prompt = ("[%d/%d] Save buffer: %s?"):format(i, #mods, display) },
+      function(choice)
+        if not choice or choice == "Cancel" then
+          return vim.notify("Aborted, buffers untouched", vim.log.levels.INFO)
+        end
+        if choice == "Save" then
+          vim.api.nvim_buf_call(buf, function() vim.cmd("write") end)
+        end
+        handle_next(i + 1)
+      end
+    )
   end
 
-  vim.cmd("redraw")
-  vim.api.nvim_echo(
-    { { "[q] quit w/o saving, [x] save + quit, [c] cancel", "WarningMsg" } },
-    false,
-    {}
-  )
-  local key = vim.fn.nr2char(vim.fn.getchar())
-
-  if key == "q" then
-    vim.cmd("bdelete!")
-    go_to_dashboard()
-  elseif key == "x" then
-    vim.cmd("write | bdelete")
-    go_to_dashboard()
+  -- 3) entry point
+  if #mods == 0 then
+    -- no unsaved buffers → immediate wipe & dashboard
+    vim.cmd("bufdo! bwipeout!")
+    vim.cmd("only")
+    vim.cmd("enew")
+    dash.open({ buf = vim.api.nvim_get_current_buf(), win = vim.api.nvim_get_current_win() })
   else
-    vim.api.nvim_echo({ { "Cancelled", "Normal" } }, false, {})
+    handle_next(1)
   end
-end, { desc = "Back to Dashboard" })
+end, {
+  desc   = "Close everything & show initial Snacks dashboard (with per‑file save prompts)",
+  silent = true,
+})
+-- END OF CRAZY KEYMAP --
 
+
+-- Other keymaps --
+-- Rename symbol in scope
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
-
-vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, { desc = "Show diagnostic" })
-
-vim.keymap.set("n", "<leader>vl", "<cmd>Telescope diagnostics<CR>", { desc = "List diagnostics" })
-
-vim.keymap.set("n", "<leader>fp", function()
-  require("telescope").extensions.projects.projects()
-end, { desc = "Find Projects" })
 
 -- Visual mode tab to indent, and stay in visual mode
 vim.keymap.set("v", "<Tab>", ">gv", { noremap = true, silent = true })
@@ -50,28 +95,30 @@ vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
 vim.keymap.set("i", "<C-d>", "<C-o>x", { desc = "Forward delete (simulate 'x')" })
 vim.keymap.set("i", "<Del>", "<C-o>x", { desc = "Forward delete (simulate 'x')" })
 
--- Line Swapping keymaps
--- Normal mode
-vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })
-vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { desc = "Move line up" })
 
-vim.keymap.set("i", "<A-j>", "<C-o>:m .+1<CR>==", { desc = "Move line down" })
-vim.keymap.set("i", "<A-k>", "<C-o>:m .-2<CR>==", { desc = "Move line up" })
+-- Line Swapping keymaps --
+vim.keymap.set("n", "<A-j>", "<cmd>m .+1<CR>==", { desc = "Move line down" })
+vim.keymap.set("n", "<A-k>", "<cmd>m .-2<CR>==", { desc = "Move line up" })
 
--- Visual mode
+vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { desc = "Move line down" })
+vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { desc = "Move line up" })
+
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
+
+-- Moving across a line --
+-- Moving by a word
 vim.keymap.set("n", "<A-l>", "w", { desc = "Move forward one word" })
 vim.keymap.set("n", "<A-h>", "b", { desc = "Move backward one word" })
 
-
-vim.keymap.set("i", "<A-l>", "<C-o>w", { desc = "Move word forward (insert)" })
-vim.keymap.set("i", "<A-h>", "<C-o>b", { desc = "Move word back (insert)" })
+vim.keymap.set("i", "<A-l>", "<C-o>w", { desc = "Move forward one word" })
+vim.keymap.set("i", "<A-h>", "<C-o>b", { desc = "Move backward one word" })
 
 vim.keymap.set("v", "<A-l>", "w", { desc = "Move forward one word" })
 vim.keymap.set("v", "<A-h>", "b", { desc = "Move backward one word" })
 
+-- Moving to the beginning/end of a line
 vim.keymap.set("n", "<A-]>", "$", { desc = "Move to the end of the line" })
 vim.keymap.set("n", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
 
@@ -81,11 +128,15 @@ vim.keymap.set("i", "<A-[>", "<C-o>^", { desc = "Move to the first non-whitespac
 vim.keymap.set("v", "<A-]>", "$", { desc = "Move to the end of the line" })
 vim.keymap.set("v", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
 
--- Insert mode: Shift+Tab -> de-indent and stay in insert
+
+-- Indenting shortcuts --
+-- De-indent the current line in insert mode
 vim.keymap.set("i", "<S-Tab>", "<C-d>", { desc = "De-indent line (insert mode)" })
 
--- Visual mode: Shift+Tab -> decrease indent for selection
+-- De-indent the whole selection in visual mode
 vim.keymap.set("v", "<S-Tab>", "<gv", { desc = "De-indent selection (visual mode)" })
 
+
+-- Clipboard shortcuts --
 vim.keymap.set('v', '<leader>y', '"+y', { noremap = true, silent = true, desc = 'Copy to system clipboard' })
 
