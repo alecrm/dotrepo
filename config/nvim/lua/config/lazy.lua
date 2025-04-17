@@ -42,4 +42,18 @@ require("lazy").setup({
   },
 })
 
+
+-- Color Scheme options --
 vim.cmd.colorscheme("monokai-pro")
+
+-- Update the background of the prompt title text
+vim.api.nvim_set_hl(0, "SnacksPickerTitle", {
+  bg = "#f29e1f",
+  fg = "#1e1e2e",
+})
+
+-- Update the border line below the prompt text
+vim.api.nvim_set_hl(0, "SnacksPickerInputBorder", {
+  fg = "#f29e1f",
+})
+

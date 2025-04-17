@@ -10,8 +10,8 @@ return {
       filter = "pro",
       day_night = {
         enable = true,
-        day_filter = "pro",
-        night_filter = "spectrum"
+        day_filter = "octagon",
+        night_filter = "ristretto"
       },
       inc_search = "background",
       background_clear = {
@@ -31,7 +31,17 @@ return {
           context_highlight = "pro",
           context_start_underline = true,
         }
-      }
+      },
+      override = function(c)
+        local hp = require("monokai-pro.color_helper")
+        local common_fg = hp.lighten(c.sideBar.foreground, 30)
+        return {
+          SnacksPicker = { bg = c.editor.background, fg = common_fg },
+          SnacksPickerBorder = { bg = c.editor.background, fg = c.tab.unfocusedActiveBorder },
+          SnacksPickerTree = { fg = c.editorLineNumber.foreground },
+          NonText = { fg = c.base.dimmed3 },
+        }
+      end,
     },
   },
 }
