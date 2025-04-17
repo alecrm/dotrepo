@@ -1,3 +1,23 @@
+-- Helper functions
+local function get_root()
+  -- start from cwd (or use vim.api.nvim_buf_get_name(0) to use current file)
+  local cwd = vim.loop.cwd()
+  -- look for any of these files in parent directories
+  local markers = { "pyproject.toml", "requirements.txt", ".git" }
+  local found  = vim.fs.find(markers, { upward = true, path = cwd })[1]
+  return found and vim.fs.dirname(found) or cwd
+end
+
+local function get_activation_command()
+  local root     = get_root()
+  local activate = root .. "/.venv/bin/activate"
+  if vim.fn.filereadable(activate) == 1 then
+    return "source " .. activate .. " && exec $SHELL"
+  end
+  return vim.o.shell
+end
+
+-- Plugin declaration
 return {
   "akinsho/toggleterm.nvim",
   version = "*",
@@ -5,7 +25,7 @@ return {
   opts = {
     start_in_insert = true,
     size = 20,
-    open_mapping = [[<leader>tt]],
+    open_mapping = [[<leader>tn]],
     hide_numbers = true,
     shade_filetypes = {},
     shade_terminals = true,
@@ -17,9 +37,14 @@ return {
     direction = "horizontal", -- 'vertical' | 'float' | 'tab'
     close_on_exit = true,
     shell = vim.o.shell,      -- use default shell
+    on_open = function(term)
+      local cmd = get_activation_command()
+      term:send(cmd, true)
+    end,
   },
   cmd = { "ToggleTerm" },
   config = function()
+    -- Makes sure we always end up in insert mode
     vim.api.nvim_create_autocmd("BufWinEnter", {
       pattern = "term://*",
       callback = function()
@@ -32,21 +57,51 @@ return {
     })
 
 
-    local Terminal = require("toggleterm.terminal").Terminal
+    -- Local variable declarations
+    local Terminal = require("toggleterm.terminal").Terminal -- Terminal to use
+    local terms_by_root = {} -- Table for tracking terminals per project
 
-    local function get_activation_command()
-      -- Use the tracked variable or set a default path if not present.
-      local venv_path = vim.b.venv_path or "./venv/bin/activate"
-      local file = io.open(venv_path, "r")
-      if file then
-        file:close()
-        return "source " .. venv_path .. " && exec $SHELL"
-      else
-        return "$SHELL"  -- Fallback if the activation script doesn't exist
+
+    -- Keymap to allow closing non-floating terminals via Esc
+    vim.keymap.set("t", "<Esc>", function()
+      -- Exit terminal mode
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
+
+      -- Check if the current window is floating
+      local win_config = vim.api.nvim_win_get_config(0)
+      if win_config.relative == "" then  -- not a floating window
+        -- Check if current buffer is a ToggleTerm terminal, then close the window
+        local bufname = vim.api.nvim_buf_get_name(0)
+        if bufname:match("term://") then
+          vim.cmd("close")
+        end
       end
+    end, { noremap = true, silent = true })
+
+
+    -- Function for toggling venv-aware terminals
+    local function toggle_venv_term(direction)
+      local root = get_root()
+      local cmd  = get_activation_command()
+
+      -- ensure we have a sub‑table for this project
+      terms_by_root[root] = terms_by_root[root] or {}
+
+      -- reuse or create the Terminal for this root+direction
+      if not terms_by_root[root][direction] then
+        terms_by_root[root][direction] = Terminal:new({
+          cmd       = cmd,
+          direction = direction,
+          hidden    = true,
+        })
+      end
+
+      -- show or hide it
+      terms_by_root[root][direction]:toggle()
     end
 
-    -- Define custom floating lazygit terminal
+
+    -- Custom terminal tools
     local lazygit = Terminal:new({
       cmd = "lazygit",
       hidden = true,
@@ -65,72 +120,42 @@ return {
       },
     })
 
-    vim.keymap.set("t", "<Esc>", function()
-      -- Exit terminal mode
-      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
-
-      -- Check if the current window is floating
-      local win_config = vim.api.nvim_win_get_config(0)
-      if win_config.relative == "" then  -- not a floating window
-        -- Check if current buffer is a ToggleTerm terminal, then close the window
-        local bufname = vim.api.nvim_buf_get_name(0)
-        if bufname:match("term://") then
-          vim.cmd("close")
-        end
-      end
-    end, { noremap = true, silent = true })
-
-    -- Global keymap to toggle lazygit
-    vim.keymap.set("n", "<leader>gg", function()
-      lazygit:toggle()
-    end, { desc = "Toggle LazyGit" })
-
-    vim.keymap.set("n", "<leader>th", function()
-      htop:toggle()
-    end, { desc = "Toggle htop"})
-
-    -- Example: Python REPL terminal
     local python = Terminal:new({
       cmd = "python",
       hidden = true,
       direction = "horizontal",
     })
 
+
+    -- Global toggles
+    -- lazygit
+    vim.keymap.set("n", "<leader>gg", function()
+      lazygit:toggle()
+    end, { desc = "Toggle LazyGit" })
+
+    -- htop
+    vim.keymap.set("n", "<leader>th", function()
+      htop:toggle()
+    end, { desc = "Toggle htop"})
+
+    -- python
     vim.keymap.set("n", "<leader>tp", function()
       python:toggle()
     end, { desc = "Toggle Python REPL" })
 
+    -- Horizontal venv term
     vim.keymap.set("n", "<C-\\>", function()
-      local cmd = get_activation_command()
-      -- Create a temporary terminal instance with the dynamically generated cmd.
-      local term = Terminal:new({
-        cmd = cmd,
-        direction = "horizontal",
-        hidden = true,
-      })
-      term:toggle() 
-    end, { desc = "Toggle venv-aware terminal" })
+        toggle_venv_term("horizontal")
+    end, { desc = "Toggle horizontal venv term" })
 
+    -- Vertical venv term
+    vim.keymap.set("n", "<leader>tv", function()
+      toggle_venv_term("vertical")
+    end, { desc = "Toggle vertical venv term" })
+
+    -- Floating venv term
     vim.keymap.set("n", "<leader>tf", function()
-      local cmd = get_activation_command()
-      local term = Terminal:new({
-        cmd = cmd,
-        direction = "float",
-        hidden = true,
-      })
-      term:toggle()
-    end, { desc = "Toggle Floating Terminal" })
+      toggle_venv_term("float")
+    end, { desc = "Toggle floating venv term" })
   end,
-
-  keys = {
-    {
-      "<leader>tv",
-      function()
-        require("toggleterm.terminal").Terminal
-            :new({ direction = "vertical" })
-            :toggle()
-      end,
-      desc = "Toggle Vertical Terminal",
-    },
-  },
 }
