@@ -193,7 +193,36 @@ return {
     "moll/vim-bbye",
     event = { "BufRead" },
     keys = {
-      { "<leader>d", "<cmd>Bdelete!<cr>", desc = "Close Buffer" },
+      {
+        "<leader>d",
+        function()
+          local buf = vim.api.nvim_get_current_buf()
+          -- if no unsaved changes, just kill it
+          if not vim.bo.modified then
+            return vim.cmd("Bdelete!")
+          end
+
+          -- otherwise, prompt
+          local name = vim.api.nvim_buf_get_name(buf)
+          if name == "" then name = "[No Name]" end
+          vim.ui.select(
+            { "Save", "Discard", "Cancel" },
+            { prompt = ("Save buffer: %s?"):format(name) },
+            function(choice)
+              if choice == "Save" then
+                vim.cmd("write")
+                vim.cmd("Bdelete!")
+              elseif choice == "Discard" then
+                vim.cmd("Bdelete!")
+              else
+                vim.notify("Buffer deletion cancelled", vim.log.levels.INFO)
+              end
+            end
+          )
+        end,
+        desc = "Close Buffer (prompt to save)",
+        silent = true,
+      },
     },
   },
 }
