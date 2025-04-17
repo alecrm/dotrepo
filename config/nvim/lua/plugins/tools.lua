@@ -85,21 +85,21 @@ return {
     },
     keys = {
       {
-        "<leader>ss",
+        "<leader>ps",
         function()
           require("persistence").load()
         end,
         desc = "Restore Session",
       },
       {
-        "<leader>sl",
+        "<leader>pl",
         function()
           require("persistence").load({ last = true })
         end,
         desc = "Restore Last Session",
       },
       {
-        "<leader>sd",
+        "<leader>pd",
         function()
           require("persistence").stop()
         end,
