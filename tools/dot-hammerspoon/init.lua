@@ -1,7 +1,6 @@
 -- ~/.hammerspoon/init.lua
-
 local hyper          = {"ctrl","shift"}
-local dropdownHeight = 300
+local dropdownHeight = 600
 local dropdownCmd    = "env WEZTERM_DROPDOWN=1 wezterm start"
 local wezAppName     = "WezTerm"
 local dropdownWindow = nil

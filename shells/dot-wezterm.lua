@@ -108,7 +108,7 @@ wezterm.on('update-status', function(window, pane)
     table.insert(elements, { Foreground = { Color = text_fg } })
     table.insert(elements, { Text = ' ' .. text .. ' ' })
   end
-  window:set_right_status(wezterm.format(elements))
+  window:set_right_status(wezterm.format(elements)) 
 end)
 
 config.keys = {
