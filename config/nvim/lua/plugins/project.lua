@@ -5,7 +5,14 @@ return {
     require("project_nvim").setup({
       -- Detect root via these patterns
       detection_methods = { "lsp", "pattern" },
-      patterns = { ".git", "Makefile", "package.json", "pyproject.toml" },
+      patterns = {
+        "pyproject.toml",
+        "setup.cfg",
+        "requirements.txt",
+        ".git",
+        "Makefile",
+        "package.json",
+      },
       silent_chdir = true,
       scope_chdir = 'tab',
     })

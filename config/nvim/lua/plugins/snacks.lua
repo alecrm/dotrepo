@@ -80,6 +80,26 @@ return {
       sources = {
         projects = {
           confirm = { "tcd", "picker_files" },
+          dev = {
+            "~/repos",
+          },
+          filter = {
+            paths = {
+              ["~/.local/share/nvim/lazy/nvim-tree.lua/"] = false,
+            },
+          },
+          patterns = {
+            "pyproject.toml",
+            "setup.cfg",
+            "requirements.txt",
+            ".git",
+            "_darcs",
+            ".hg",
+            ".bzr",
+            ".svn",
+            "package.json",
+            "Makefile",
+          },
         },
       },
     },
