@@ -95,6 +95,9 @@ return {
     }
   },
   keys = {
+    { "<leader>sr",
+      [[:%s//gc<Left><Left><Left>]],
+      desc = "Replace in buffer", mode = "n", silent = false },
     -- Top Pickers & Explorer
     { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },

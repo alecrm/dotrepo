@@ -88,10 +88,22 @@ end, {
 -- Rename symbol in scope
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
 
+
+-- Add new line and move to it in normal mode
+vim.keymap.set("n", "]<Space>", "o<Esc>", { silent=true, desc="Add new line below" })
+vim.keymap.set("n", "[<Space>", "O<Esc>", { silent=true, desc="Add new line above" })
+
+
+-- Indenting shortcuts --
 -- Visual mode tab to indent, and stay in visual mode
 vim.keymap.set("v", "<Tab>", ">gv", { noremap = true, silent = true })
-vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
+vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true, desc = "De-indent selection (visual mode)" })
 
+-- De-indent the current line in insert mode
+vim.keymap.set("i", "<S-Tab>", "<C-d>", { desc = "De-indent line (insert mode)" })
+
+
+-- Delete key forward deletes
 vim.keymap.set("i", "<C-d>", "<C-o>x", { desc = "Forward delete (simulate 'x')" })
 vim.keymap.set("i", "<Del>", "<C-o>x", { desc = "Forward delete (simulate 'x')" })
 
@@ -127,14 +139,6 @@ vim.keymap.set("i", "<A-[>", "<C-o>^", { desc = "Move to the first non-whitespac
 
 vim.keymap.set("v", "<A-]>", "$", { desc = "Move to the end of the line" })
 vim.keymap.set("v", "<A-[>", "^", { desc = "Move to the first non-whitespace char" })
-
-
--- Indenting shortcuts --
--- De-indent the current line in insert mode
-vim.keymap.set("i", "<S-Tab>", "<C-d>", { desc = "De-indent line (insert mode)" })
-
--- De-indent the whole selection in visual mode
-vim.keymap.set("v", "<S-Tab>", "<gv", { desc = "De-indent selection (visual mode)" })
 
 
 -- Clipboard shortcuts --
