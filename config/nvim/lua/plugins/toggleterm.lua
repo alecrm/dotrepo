@@ -143,9 +143,9 @@ return {
       python:toggle()
     end, { desc = "Toggle Python REPL" })
 
-    -- Horizontal venv term
-    vim.keymap.set("n", "<C-\\>", function()
-        toggle_venv_term("horizontal")
+    -- Floating venv term
+    vim.keymap.set({ "n", "t" }, "<C-\\>", function()
+        toggle_venv_term("float")
     end, { desc = "Toggle horizontal venv term" })
 
     -- Vertical venv term
@@ -153,9 +153,9 @@ return {
       toggle_venv_term("vertical")
     end, { desc = "Toggle vertical venv term" })
 
-    -- Floating venv term
-    vim.keymap.set("n", "<leader>tf", function()
-      toggle_venv_term("float")
+    -- Horizontal venv term
+    vim.keymap.set("n", "<leader>to", function()
+      toggle_venv_term("horizontal")
     end, { desc = "Toggle floating venv term" })
   end,
 }
