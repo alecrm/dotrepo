@@ -115,9 +115,6 @@ return {
     }
   },
   keys = {
-    { "<leader>sr",
-      [[:%s//gc<Left><Left><Left>]],
-      desc = "Replace in buffer", mode = "n", silent = false },
     -- Top Pickers & Explorer
     { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
@@ -165,6 +162,47 @@ return {
     { "<leader>sM", function() Snacks.picker.man() end, desc = "Man Pages" },
     { "<leader>sp", function() Snacks.picker.lazy() end, desc = "Search for Plugin Spec" },
     { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
+    {
+      "<leader>sr",
+      function()
+        vim.api.nvim_feedkeys(":%s//gc", "n", false)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left><Left><Left>", true, false, true), "n", false)
+        vim.api.nvim_create_autocmd("CmdlineLeave", {
+          once = true,
+          pattern = ":",
+          callback = function()
+            vim.schedule(function()
+              vim.cmd("nohlsearch")
+            end)
+          end,
+        })
+      end,
+      desc = "Search and replace in buffer (nohl after)",
+      mode = "n",
+      silent = true,
+    },
+    {
+      "<leader>sr",
+      function()
+        -- Just feed the `:s//gc` and <Left>s without reselecting
+        vim.api.nvim_feedkeys(":s//gc", "n", false)
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left><Left><Left>", true, false, true), "n", false)
+        vim.api.nvim_create_autocmd("CmdlineLeave", {
+          once = true,
+          pattern = ":",
+          callback = function()
+            vim.schedule(function()
+              vim.cmd("nohlsearch")
+            end)
+          end,
+        })
+      end,
+      desc = "Search and replace in selection (nohl after)",
+      mode = "v",
+      silent = true,
+    },
+    -- { "<leader>sr", [[:%s//gc<Left><Left><Left>| nohlsearch<CR>]], desc = "Replace in buffer", mode = "n", silent = false },
+    -- { "<leader>sr", [[:s//gc<Left><Left><Left>| nohlsearch<CR>]], desc = "Replace in buffer", mode = "v", silent = false },
     { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume" },
     { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
     { "<leader>uC", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },

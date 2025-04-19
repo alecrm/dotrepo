@@ -109,26 +109,33 @@ vim.keymap.set("i", "<Del>", "<C-o>x", { desc = "Forward delete (simulate 'x')" 
 
 
 -- Line Swapping keymaps --
-vim.keymap.set("n", "<A-j>", "<cmd>m .+1<CR>==", { desc = "Move line down" })
-vim.keymap.set("n", "<A-k>", "<cmd>m .-2<CR>==", { desc = "Move line up" })
+vim.keymap.set("n", "<A-J>", "<cmd>m .+1<CR>==", { desc = "Move line down" })
+vim.keymap.set("n", "<A-K>", "<cmd>m .-2<CR>==", { desc = "Move line up" })
 
-vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { desc = "Move line down" })
-vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { desc = "Move line up" })
+vim.keymap.set("i", "<A-J>", "<Esc>:m .+1<CR>==gi", { desc = "Move line down" })
+vim.keymap.set("i", "<A-K>", "<Esc>:m .-2<CR>==gi", { desc = "Move line up" })
 
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+vim.keymap.set("v", "<A-J>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+vim.keymap.set("v", "<A-K>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+
+
+-- Moving characters in insert mode --
+vim.keymap.set("i", "<A-j>", "<Esc>ja", { desc = "Move down one line" })
+vim.keymap.set("i", "<A-k>", "<Esc>ka", { desc = "Move up one line" })
+vim.keymap.set("i", "<A-h>", "<Esc>ha", { desc = "Move left one character" })
+vim.keymap.set("i", "<A-l>", "<Esc>la", { desc = "Move right one character" })
 
 
 -- Moving across a line --
 -- Moving by a word
-vim.keymap.set("n", "<A-l>", "w", { desc = "Move forward one word" })
-vim.keymap.set("n", "<A-h>", "b", { desc = "Move backward one word" })
+vim.keymap.set("n", "<A-L>", "w", { desc = "Move forward one word" })
+vim.keymap.set("n", "<A-H>", "b", { desc = "Move backward one word" })
 
-vim.keymap.set("i", "<A-l>", "<C-o>w", { desc = "Move forward one word" })
-vim.keymap.set("i", "<A-h>", "<C-o>b", { desc = "Move backward one word" })
+vim.keymap.set("i", "<A-L>", "<C-o>w", { desc = "Move forward one word" })
+vim.keymap.set("i", "<A-H>", "<C-o>b", { desc = "Move backward one word" })
 
-vim.keymap.set("v", "<A-l>", "w", { desc = "Move forward one word" })
-vim.keymap.set("v", "<A-h>", "b", { desc = "Move backward one word" })
+vim.keymap.set("v", "<A-L>", "w", { desc = "Move forward one word" })
+vim.keymap.set("v", "<A-H>", "b", { desc = "Move backward one word" })
 
 -- Moving to the beginning/end of a line
 vim.keymap.set("n", "<A-]>", "$", { desc = "Move to the end of the line" })
@@ -142,5 +149,81 @@ vim.keymap.set("v", "<A-[>", "^", { desc = "Move to the first non-whitespace cha
 
 
 -- Clipboard shortcuts --
+-- Easy copy to clipboard
 vim.keymap.set('v', '<leader>y', '"+y', { noremap = true, silent = true, desc = 'Copy to system clipboard' })
 
+-- Replace current line with yanked lines
+vim.keymap.set("n", "<leader>P", '"_ddP', { noremap = true, silent = true, desc = "Replace the current line with currently yanked lines" })
+
+
+-- Duplicate line keymaps --
+-- Helper Functions
+------------------------------------------------------------------
+-- Feed a raw key sequence (helper)
+------------------------------------------------------------------
+local function feed(keys)
+  vim.api.nvim_feedkeys(
+    vim.api.nvim_replace_termcodes(keys, true, false, true),
+    "n", false
+  )
+end
+
+--------------------------------------------------------------
+-- Duplicate current line, keep same column, return to Insert
+-- dir =  1 → below   (yy p)
+-- dir = -1 → above   (yy P)
+--------------------------------------------------------------
+local function duplicate_line(dir)
+  local win        = vim.api.nvim_get_current_win()
+  local row, col   = unpack(vim.api.nvim_win_get_cursor(win))
+  local from_ins   = vim.fn.mode() == "i"
+
+  if from_ins then vim.cmd("stopinsert") end   -- leave Insert, sync
+
+  vim.cmd("normal! yy")
+  vim.cmd("normal! " .. (dir == 1 and "p" or "P"))
+
+  if dir == 1 then row = row + 1 end           -- adjust target row
+  vim.api.nvim_win_set_cursor(win, { row, col })
+
+  if from_ins then feed("a") end               -- pop back into Insert
+end
+
+------------------------------------------------------------------
+-- Duplicate current Visual / Select block
+-- dir =  1 → below   ("zp after end mark)
+-- dir = -1 → above   ("zP before start mark)
+------------------------------------------------------------------
+local function duplicate_visual(dir)
+  local vtype = vim.fn.visualmode()        -- 'v', 'V', or '\022' (<C-v>)
+
+  feed('"zy')                              -- yank selection into reg z
+
+  if dir == 1 then                         -- duplicate BELOW
+    feed("`]")                             -- jump to end of selection
+    feed('"zp')                            -- paste after it
+  else                                     -- duplicate ABOVE
+    feed("'[")                             -- jump to start of selection
+    feed('"zP')                            -- paste before it
+  end
+
+  -- marks [ and ] now surround the *new* text
+  if vtype == 'V' then                     -- line‑wise (V‑LINE)
+    feed("`[V`]")
+  elseif vtype == '\022' then              -- block‑wise (<C‑v>)
+    feed("`[<C‑v>`]")
+  else                                     -- character‑wise
+    feed("`[v`]")
+  end
+end
+
+------------------------------------------------------------------
+-- Key‑maps (Visual + Select modes)
+------------------------------------------------------------------
+vim.keymap.set({ "n", "i" }, "<C-A-j>",  function() duplicate_line(1) end, { desc = "duplicate line below" })
+vim.keymap.set({ "n", "i" }, "<C-A-k>", function() duplicate_line(-1) end, { desc = "duplicate line above" })
+
+vim.keymap.set("v", "<C-A-j>",  function() duplicate_visual(1) end, { desc = "duplicate selection below" })
+vim.keymap.set("v", "<C-A-k>", function() duplicate_visual(-1) end, { desc = "duplicate selection above" })
+------------------------------------------------------------------
+------------------------------------------------------------------
