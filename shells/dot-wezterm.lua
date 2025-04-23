@@ -10,6 +10,8 @@ config.font = wezterm.font_with_fallback({
   'MesloLGS NF',
   'JetBrainsMono Nerd Font',
   'FiraCode Nerd Font',
+  'AppleGothic',
+  'Osaka',
 })
 
 config.color_scheme = 'Catppuccin Mocha (Gogh)'
