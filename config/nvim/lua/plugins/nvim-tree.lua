@@ -12,6 +12,7 @@ return {
         ignore = false,
       },
       filters = {
+        dotfiles = false,
         custom = {
           ".mypy_cache",
           ".vscode",
@@ -19,7 +20,7 @@ return {
           "uv.lock",
           ".pytest_cache",
           ".DS_Store",
-          ".git",
+          "^.git$",
           "__pycache__"
         },
       },

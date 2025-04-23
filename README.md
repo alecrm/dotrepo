@@ -1,7 +1,7 @@
 # Dotfiles Repo
 Repo containing dot files and general dev environment files.
 
-Legerage [GNU Stow](https://www.gnu.org/software/stow/) for symlink management.
+Leverage [GNU Stow](https://www.gnu.org/software/stow/) for symlink management.
 
 Files and directories that begin with a dot are prefixed with `dot-` instead, and the `--dotfiles` flag is used to have `stow` alter them back. This is so the contents of the repository (or certain directories) are not completely hidden.
 

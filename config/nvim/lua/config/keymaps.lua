@@ -78,7 +78,7 @@ vim.keymap.set("n", "<leader>q", function()
     handle_next(1)
   end
 end, {
-  desc   = "Close everything & show initial Snacks dashboard (with per‑file save prompts)",
+  desc   = "Safely return to dashboard",
   silent = true,
 })
 -- END OF CRAZY KEYMAP --
@@ -87,6 +87,34 @@ end, {
 -- Other keymaps --
 -- Rename symbol in scope
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
+
+-- Source current file
+vim.keymap.set("n", "<leader>rr", "<cmd>luafile %<CR>", { desc = "Re-source current file" })
+
+-- Restart LSP
+vim.keymap.set("n", "<leader>rl", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Stop all clients for this buffer
+  for _, client in pairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+    client.config.cmd = nil  -- prevent auto-restart
+    client.stop()
+  end
+
+  -- Delay the re-trigger just a bit
+  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  if filepath ~= "" then
+    vim.schedule(function()
+      vim.cmd("doautocmd BufReadPost " .. vim.fn.fnameescape(filepath))
+    end)
+  end
+end, { desc = "Restart LSP for current buffer" })
+
+-- Resize Windows
+vim.keymap.set({ "n", "i", "v" }, "<C-Up>", ":resize -4<CR>")
+vim.keymap.set({ "n", "i", "v" }, "<C-Down>", ":resize +4<CR>")
+vim.keymap.set("n", "<C-Left>", ":vertical resize -4<CR>")
+vim.keymap.set("n", "<C-Right>", ":vertical resize +4<CR>")
 
 
 -- Add new line and move to it in normal mode
