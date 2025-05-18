@@ -3,7 +3,7 @@ local function get_root()
   -- start from cwd (or use vim.api.nvim_buf_get_name(0) to use current file)
   local cwd = vim.loop.cwd()
   -- look for any of these files in parent directories
-  local markers = { "pyproject.toml", "requirements.txt", ".git" }
+  local markers = { "pyproject.toml", ".git", "requirements.txt", }
   local found  = vim.fs.find(markers, { upward = true, path = cwd })[1]
   return found and vim.fs.dirname(found) or cwd
 end

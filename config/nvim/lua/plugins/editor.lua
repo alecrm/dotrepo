@@ -194,7 +194,7 @@ return {
     event = { "BufRead" },
     keys = {
       {
-        "<leader>d",
+        "<leader>w",
         function()
           local buf = vim.api.nvim_get_current_buf()
           -- if no unsaved changes, just kill it

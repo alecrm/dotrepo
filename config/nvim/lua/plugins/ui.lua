@@ -123,13 +123,13 @@ return {
       { "anuvyklack/animation.nvim", enabled = true },
     },
     opts = {
-      animation = { enable = false },
+      animation = { enable = true },
       autowidth = { enable = true },
     },
     keys = { { "<leader>z", "<cmd>WindowsMaximize<CR>", desc = "Zoom window" } },
     init = function()
-      vim.o.winwidth = 30
-      vim.o.winminwidth = 30
+      vim.o.winwidth = 50
+      vim.o.winminwidth = 50
       vim.o.equalalways = true
     end,
   },

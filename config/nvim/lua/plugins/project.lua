@@ -8,8 +8,8 @@ return {
       patterns = {
         "pyproject.toml",
         "setup.cfg",
-        "requirements.txt",
         ".git",
+        "requirements.txt",
         "Makefile",
         "package.json",
       },

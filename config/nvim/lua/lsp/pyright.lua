@@ -8,7 +8,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     if filepath == "" then return end
 
     local dirname = vim.fs.dirname(filepath)
-    local root_files = { "pyproject.toml", "requirements.txt", ".git" }
+    local root_files = { "pyproject.toml", ".git", "requirements.txt", }
     local root = vim.fs.find(root_files, { upward = true, path = dirname })[1]
     if not root then return end
 

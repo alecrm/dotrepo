@@ -1,3 +1,53 @@
+local uv = vim.uv or vim.loop
+local function find_projects_in_tree(root)
+  local projects = {}
+
+  local function scan(dir)
+    local entries = vim.fn.readdir(dir)
+    for _, entry in ipairs(entries) do
+      local path = dir .. "/" .. entry
+      local stat = uv.fs_stat(path)
+      if stat and stat.type == "directory" then
+        if uv.fs_stat(path .. "/.git") then
+          table.insert(projects, path)
+        else
+          scan(path)
+        end
+      end
+    end
+  end
+
+  scan(vim.fn.expand(root))
+  return projects
+end
+
+local function clear_highlight_when_idle(delay_ms, stable_time_ms)
+  local check_interval = 50
+  local stable_count = stable_time_ms / check_interval
+  local idle_counter = 0
+
+  local function check()
+    if vim.api.nvim_get_mode().mode ~= "c" then
+      idle_counter = idle_counter + 1
+    else
+      idle_counter = 0 -- reset if user goes back into command mode
+    end
+
+    if idle_counter >= stable_count then
+      -- We're stable outside of command mode → safe to clear highlights
+      vim.cmd("nohlsearch")
+      vim.fn.setreg("/", "")
+    else
+      -- Keep checking until stable
+      vim.defer_fn(check, check_interval)
+    end
+  end
+
+  -- Start the checking loop
+  vim.defer_fn(check, delay_ms)
+end
+
+
 return {
   "folke/snacks.nvim",
   priority = 1000,
@@ -80,9 +130,7 @@ return {
       sources = {
         projects = {
           confirm = { "tcd", "picker_files" },
-          dev = {
-            "~/repos",
-          },
+          dev = find_projects_in_tree("~/repos"),
           filter = {
             paths = {
               ["~/.local/share/nvim/lazy/nvim-tree.lua/"] = false,
@@ -91,8 +139,8 @@ return {
           patterns = {
             "pyproject.toml",
             "setup.cfg",
-            "requirements.txt",
             ".git",
+            "requirements.txt",
             "_darcs",
             ".hg",
             ".bzr",
@@ -167,15 +215,7 @@ return {
       function()
         vim.api.nvim_feedkeys(":%s//gc", "n", false)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left><Left><Left>", true, false, true), "n", false)
-        vim.api.nvim_create_autocmd("CmdlineLeave", {
-          once = true,
-          pattern = ":",
-          callback = function()
-            vim.schedule(function()
-              vim.cmd("nohlsearch")
-            end)
-          end,
-        })
+        clear_highlight_when_idle(10, 50)
       end,
       desc = "Search and replace in buffer (nohl after)",
       mode = "n",
@@ -184,25 +224,14 @@ return {
     {
       "<leader>sr",
       function()
-        -- Just feed the `:s//gc` and <Left>s without reselecting
         vim.api.nvim_feedkeys(":s//gc", "n", false)
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left><Left><Left>", true, false, true), "n", false)
-        vim.api.nvim_create_autocmd("CmdlineLeave", {
-          once = true,
-          pattern = ":",
-          callback = function()
-            vim.schedule(function()
-              vim.cmd("nohlsearch")
-            end)
-          end,
-        })
+        clear_highlight_when_idle(10, 50)
       end,
       desc = "Search and replace in selection (nohl after)",
       mode = "v",
       silent = true,
     },
-    -- { "<leader>sr", [[:%s//gc<Left><Left><Left>| nohlsearch<CR>]], desc = "Replace in buffer", mode = "n", silent = false },
-    -- { "<leader>sr", [[:s//gc<Left><Left><Left>| nohlsearch<CR>]], desc = "Replace in buffer", mode = "v", silent = false },
     { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume" },
     { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
     { "<leader>uC", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },

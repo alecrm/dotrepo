@@ -1,30 +1,71 @@
 -- config/drop.lua
 local M = {}
 
+local screensaver_timeout = 1000 * 60 * 3
+-- local screensaver_timeout = 1000 * 3
+
+local drop_config = {
+  theme = 'matrix',
+  -- theme = 'auto',
+  themes = {
+    { theme = "new_year",            month = 1,                       day = 1 },
+    { theme = "valentines_day",      month = 2,                       day = 14 },
+    { theme = "st_patricks_day",     month = 3,                       day = 17 },
+    { theme = "easter",              holiday = "easter" },
+    { theme = "april_fools",         month = 4,                       day = 1 },
+    { theme = "us_independence_day", month = 7,                       day = 4 },
+    { theme = "halloween",           month = 10,                      day = 31 },
+    { theme = "us_thanksgiving",     holiday = "us_thanksgiving" },
+    { theme = "xmas",                from = { month = 12, day = 24 }, to = { month = 12, day = 25 } },
+    { theme = "leaves",              from = { month = 9, day = 22 },  to = { month = 12, day = 20 } },
+    { theme = "snow",                from = { month = 12, day = 21 }, to = { month = 3, day = 19 } },
+    { theme = "spring",              from = { month = 3, day = 20 },  to = { month = 6, day = 20 } },
+    { theme = "summer",              from = { month = 6, day = 21 },  to = { month = 9, day = 21 } },
+  },
+  max = 2000,
+  interval = 50,
+  screensaver = screensaver_timeout,
+  winblend = 0,
+}
+
+-- TODO: Find a way to expose drop's start/stop to set up a keybind
+-- vim.keymap.set("n", "<leader>qs", function()
+--   -- Set to instant trigger
+--   drop_config.screensaver = 1000
+--   require("drop").setup(drop_config)
+--
+--   -- Restore after 5 seconds (or however long you want)
+--   vim.defer_fn(function()
+--     drop_config.screensaver = screensaver_timeout
+--     require("drop").setup(drop_config)
+--   end, 5000)  -- 5000 ms = 5 seconds
+-- end, { desc = "Trigger Screensaver" })
+
 M.setup = function()
-  require('drop').setup({
-    theme = 'matrix',
-    -- theme = 'auto',
-    themes = {
-      { theme = "new_year",            month = 1,                       day = 1 },
-      { theme = "valentines_day",      month = 2,                       day = 14 },
-      { theme = "st_patricks_day",     month = 3,                       day = 17 },
-      { theme = "easter",              holiday = "easter" },
-      { theme = "april_fools",         month = 4,                       day = 1 },
-      { theme = "us_independence_day", month = 7,                       day = 4 },
-      { theme = "halloween",           month = 10,                      day = 31 },
-      { theme = "us_thanksgiving",     holiday = "us_thanksgiving" },
-      { theme = "xmas",                from = { month = 12, day = 24 }, to = { month = 12, day = 25 } },
-      { theme = "leaves",              from = { month = 9, day = 22 },  to = { month = 12, day = 20 } },
-      { theme = "snow",                from = { month = 12, day = 21 }, to = { month = 3, day = 19 } },
-      { theme = "spring",              from = { month = 3, day = 20 },  to = { month = 6, day = 20 } },
-      { theme = "summer",              from = { month = 6, day = 21 },  to = { month = 9, day = 21 } },
-    },
-    max = 2000,
-    interval = 50,
-    screensaver = 1000 * 60 * 3,
-    winblend = 0,
-  })
+  require('drop').setup(drop_config)
+  -- require('drop').setup({
+  --   theme = 'matrix',
+  --   -- theme = 'auto',
+  --   themes = {
+  --     { theme = "new_year",            month = 1,                       day = 1 },
+  --     { theme = "valentines_day",      month = 2,                       day = 14 },
+  --     { theme = "st_patricks_day",     month = 3,                       day = 17 },
+  --     { theme = "easter",              holiday = "easter" },
+  --     { theme = "april_fools",         month = 4,                       day = 1 },
+  --     { theme = "us_independence_day", month = 7,                       day = 4 },
+  --     { theme = "halloween",           month = 10,                      day = 31 },
+  --     { theme = "us_thanksgiving",     holiday = "us_thanksgiving" },
+  --     { theme = "xmas",                from = { month = 12, day = 24 }, to = { month = 12, day = 25 } },
+  --     { theme = "leaves",              from = { month = 9, day = 22 },  to = { month = 12, day = 20 } },
+  --     { theme = "snow",                from = { month = 12, day = 21 }, to = { month = 3, day = 19 } },
+  --     { theme = "spring",              from = { month = 3, day = 20 },  to = { month = 6, day = 20 } },
+  --     { theme = "summer",              from = { month = 6, day = 21 },  to = { month = 9, day = 21 } },
+  --   },
+  --   max = 2000,
+  --   interval = 50,
+  --   screensaver = 1000 * 60 * 3,
+  --   winblend = 0,
+  -- })
 end
 
 return M

@@ -62,7 +62,14 @@ vim.keymap.set("n", "<leader>q", function()
         if choice == "Save" then
           vim.api.nvim_buf_call(buf, function() vim.cmd("write") end)
         end
-        handle_next(i + 1)
+        if i + 1 <= #mods then
+          handle_next(i + 1)
+          vim.schedule(function() vim.cmd("startinsert") end)
+        else
+          handle_next(i + 1)
+        end
+        -- handle_next(i + 1)
+        -- vim.schedule(function() vim.cmd("startinsert") end)
       end
     )
   end
