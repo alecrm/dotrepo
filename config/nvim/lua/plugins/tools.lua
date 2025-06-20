@@ -92,6 +92,13 @@ return {
         desc = "Restore Session",
       },
       {
+        "<leader>pS",
+        function()
+          require("persistence").select()
+        end,
+        desc = "Restore Session",
+      },
+      {
         "<leader>pl",
         function()
           require("persistence").load({ last = true })

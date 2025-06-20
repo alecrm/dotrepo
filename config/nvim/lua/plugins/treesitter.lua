@@ -1,4 +1,3 @@
-
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -25,6 +24,7 @@ return {
         "c",
         "diff",
         "html",
+        "java",
         "javascript",
         "jsdoc",
         "json",
@@ -38,6 +38,7 @@ return {
         "python",
         "query",
         "regex",
+        "scala",
         "toml",
         "tsx",
         "typescript",

@@ -26,6 +26,7 @@ vim.keymap.set("n", "<leader>q", function()
   local function handle_next(i)
     if i > #mods then
       -- done → wipe & reset to initial dashboard
+      require("persistence").save()
       vim.cmd("bufdo! bwipeout!")
       vim.cmd("only")
       vim.cmd("enew")
@@ -77,6 +78,7 @@ vim.keymap.set("n", "<leader>q", function()
   -- 3) entry point
   if #mods == 0 then
     -- no unsaved buffers → immediate wipe & dashboard
+    require("persistence").save()
     vim.cmd("bufdo! bwipeout!")
     vim.cmd("only")
     vim.cmd("enew")

@@ -1,6 +1,19 @@
+vim.filetype.add({
+  filename = {
+    [".gitlab-ci.yaml"] = "yaml.gitlab",
+  },
+})
+
+
 vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
   callback = function()
-    vim.lsp.buf.document_highlight()
+    local bufnr = vim.api.nvim_get_current_buf()
+      for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+        if client.server_capabilities.documentHighlightProvider then
+          vim.lsp.buf.document_highlight()
+          break
+        end
+      end
   end,
 })
 
@@ -12,6 +25,16 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 
 
 return {
+
+  {
+    "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
+  },
+
+  {
+    "mfussenegger/nvim-jdtls",
+    ft = { "java" },
+  },
 
  -- Mason core plugin
   {
@@ -36,6 +59,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     dependencies = {
       "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
       "saghen/blink.cmp",
     },
     config = function()
@@ -46,17 +70,43 @@ return {
           "pyright",
           "ts_ls",
           "bashls",
+          "gitlab_ci_ls",
+          "yamlls",
         },
         automatic_installation = true,
+        automatic_enable = true,
       })
 
-      -- require("mason-lspconfig").setup_handlers({
-      --   function(server)
-      --     vim.lsp.config[server].setup()
-      --   end,
-      -- })
+      vim.lsp.enable("pyright", false)
+      vim.lsp.enable("jdtls", false)
+
     end,
   },
+
+  {
+    "scalameta/nvim-metals",
+    ft = { "scala", "sbt" },
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local metals_config = require("metals").bare_config()
+
+      metals_config.settings = {
+        showImplicitArguments = true,
+        showInferredType = true,
+      }
+
+      metals_config.init_options.statusBarProvider = "on"
+      metals_config.capabilities = vim.lsp.protocol.make_client_capabilities()
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "scala", "sbt" },
+        callback = function()
+          require("metals").initialize_or_attach(metals_config)
+        end,
+      })
+    end,
+  },
+
 
   {
     'saghen/blink.cmp',
