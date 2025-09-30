@@ -4,6 +4,7 @@ local home = os.getenv("HOME")
 local workspace_dir = home .. "/.local/share/jdtls-workspaces/" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 
 local launcher = vim.fn.glob(home .. "/.local/share/jdtls/plugins/org.eclipse.equinox.launcher_*.jar")
+local lombok = home .. "/.local/share/lombok/lombok.jar"
 
 local config = {
   cmd = {
@@ -17,6 +18,8 @@ local config = {
     "--add-modules=ALL-SYSTEM",
     "--add-opens", "java.base/java.util=ALL-UNNAMED",
     "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+    "-javaagent:" .. lombok,
+    "-Xbootclasspath/a:" .. lombok,
     "-jar", launcher,
     "-configuration", home .. "/.local/share/jdtls/config_mac",
     "-data", workspace_dir,

@@ -124,13 +124,30 @@ return {
     },
     opts = {
       animation = { enable = true },
-      autowidth = { enable = true },
+      autowidth = {
+        enable = true,
+        winwidth = 40,
+      },
+      ignore = {
+        filetype = {
+          "NvimTree",
+          "neo-tree",
+          "undotree",
+          "gundo",
+          "aerial",
+        },
+        buftype = {
+          "nofile",
+          "prompt",
+          "help"
+        },
+      },
     },
     keys = { { "<leader>z", "<cmd>WindowsMaximize<CR>", desc = "Zoom window" } },
     init = function()
-      vim.o.winwidth = 75
-      vim.o.winminwidth = 75
-      vim.o.equalalways = true
+      vim.o.winwidth = 10
+      vim.o.winminwidth = 5
+      vim.o.equalalways = false
     end,
   },
   

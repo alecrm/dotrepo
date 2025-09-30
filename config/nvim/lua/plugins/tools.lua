@@ -121,6 +121,13 @@ return {
     opts = {
       -- add options here
       -- or leave it empty to use the default settings
+      filetypes = {
+        codecompanion = {
+          prompt_for_file_name = false,
+          template = "[Image]($FILE_PATH)",
+          use_absolute_path = true,
+        },
+      },
     },
     keys = {
       -- suggested keymap
@@ -154,11 +161,32 @@ return {
 
   {
     "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown" },
-    name = "render-markdown", -- Only needed if you have another plugin named markdown.nvim
-    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
-    config = function()
-      require("render-markdown").setup({})
-    end,
+    ft = { "markdown", "codecompanion" }, -- load when either is opened
+    name = "render-markdown",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      -- tell the plugin to render in CodeCompanion chat buffers too
+      file_types = { "markdown", "codecompanion" },
+
+      html = {
+        enabled = true,
+        tag = {
+          buf     = { icon = ' ', highlight = 'CodeCompanionChatVariable' },
+          file    = { icon = ' ', highlight = 'CodeCompanionChatVariable' },
+          help    = { icon = '󰘥 ', highlight = 'CodeCompanionChatVariable' },
+          image   = { icon = ' ', highlight = 'CodeCompanionChatVariable' },
+          symbols = { icon = ' ', highlight = 'CodeCompanionChatVariable' },
+          url     = { icon = '󰖟 ', highlight = 'CodeCompanionChatVariable' },
+          var     = { icon = ' ', highlight = 'CodeCompanionChatVariable' },
+          tool    = { icon = ' ', highlight = 'CodeCompanionChatTool' },
+          user    = { icon = ' ', highlight = 'CodeCompanionChatTool' },
+          group   = { icon = ' ', highlight = 'CodeCompanionChatToolGroup' },
+        },
+      },
+    },
   },
+
 }

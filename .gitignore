@@ -1,4 +1,5 @@
 lazy-lock.json
 .DS_Store
 *.local
+*.local*
 known_hosts

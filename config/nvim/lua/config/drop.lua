@@ -24,7 +24,8 @@ local drop_config = {
   },
   max = 2000,
   interval = 50,
-  screensaver = screensaver_timeout,
+  -- screensaver = screensaver_timeout,
+  screensaver = false,
   winblend = 0,
 }
 
