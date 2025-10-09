@@ -15,6 +15,7 @@ vim.opt.termguicolors = true
 require("config.lazy")
 require("config.keymaps")
 require("lsp.pyright")
+require("config.snacks_keyswap_improved").setup() -- Swap Enter and 'o' keymaps in snacks explorer with window picker
 
 -- TODO:
 --    Set up conform.nvim

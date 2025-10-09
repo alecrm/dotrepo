@@ -165,11 +165,16 @@ return {
               function(args)
                 local abs = tostring(args.lnum)
                 local rel = tostring(math.abs(vim.fn.line(".") - args.lnum))
-                if args.lnum == vim.fn.line(".") then
-                  return " " .. abs -- current line: just absolute
-                else
-                  return string.format(" %s|%s", abs, rel)
-                end
+                
+                -- Find maximum line number length for consistent alignment
+                local max_width = #tostring(vim.fn.line("$"))
+                
+                -- Pad both numbers to align consistently
+                abs = string.format("%" .. max_width .. "s", abs)
+                rel = string.format("%" .. max_width .. "s", rel)
+                
+                -- Use the pipe separator
+                return string.format(" %s|%s", abs, rel)
               end,
             },
             condition = { true, builtin.not_empty },
